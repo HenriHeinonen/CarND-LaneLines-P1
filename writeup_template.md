@@ -23,7 +23,29 @@ The goals / steps of this project are the following:
 
 ### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+My pipeline consisted of several steps. First, I read the images from files using a for loop
+```
+kuvat = os.listdir("test_images/")
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+```
+and then I converted the images to grayscale, 
+```
+gray = grayscale(image)
+```
+then I make the Gaussian blur operation
+```
+kernel_size = 5
+blur_gray = gaussian_blur(gray, kernel_size)
+```
+using a parameter `kernel_size = 5`.
+Then I am ready to search for the Canny edges with the following parameters
+```
+low_threshold = 50
+high_threshold = 150
+edges = canny(blur_gray, low_threshold, high_threshold)
+```
+and storing the image to the variable `edges`.
 
 In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
 
