@@ -71,7 +71,7 @@ I also had to create the output directory `test_images_muokattu` first manyally 
 
 I was not able to make the videos work at all! I worked for about 30 hours for this project (the suggested goal being 10 hours a week for the course if I remember right). It took lots of time to make the environment work at all.
 
-![The original image](https://raw.githubusercontent.com/HenriHeinonen/CarND-LaneLines-P1/master/step1.png "The original image")
+![alt text](https://raw.githubusercontent.com/HenriHeinonen/CarND-LaneLines-P1/master/step1.png "The original image")
 
 ### 2. Identify potential shortcomings with your current pipeline
 
