@@ -12,11 +12,6 @@ The goals / steps of this project are the following:
 * Make a pipeline that finds lane lines on the road
 * Reflect on your work in a written report
 
-
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
-
 ---
 
 ### Reflection
@@ -74,21 +69,22 @@ cv2.line(line_image,(x_c,y_c),(x_d,y_d),(255,0,0),10)
 
 I also had to create the output directory `test_images_muokattu` first manyally or the script did not work at all! It also seems that mpimg.imsave can only store PNG images!
 
+I was not able to make the videos work at all! I worked for about 30 hours for this project (the suggested goal being 10 hours a week for the course if I remember right). It took lots of time to make the environment work at all.
+
 If you'd like to include images to show how the pipeline works, here is how to include an image: 
 
-![alt text][image1]
-
+![alt text](https://raw.githubusercontent.com/HenriHeinonen/CarND-LaneLines-P1/master/step1.png "Logo Title Text 1")
 
 ### 2. Identify potential shortcomings with your current pipeline
 
 
-One potential shortcoming would be what would happen when ... 
+One potential shortcoming would be what would happen when there are double lane lines.
 
-Another shortcoming could be ...
+Another shortcoming could be vehicles (=noise) coming to the region of interest. That could disturb the pipeline.
 
 
 ### 3. Suggest possible improvements to your pipeline
 
-A possible improvement would be to ...
+A possible improvement would be to follow the left lane lines even better. Now I am just using the horizon and the average values to draw the left lines.
 
-Another potential improvement could be to ...
+Another potential improvement could be to fix the environment somehow to make the videos work.
