@@ -67,7 +67,7 @@ and one line to make the right lane line
 cv2.line(line_image,(x_c,y_c),(x_d,y_d),(255,0,0),10)
 ```
 
-I also had to create the output directory `test_images_muokattu` first manyally or the script did not work at all! It also seems that mpimg.imsave can only store PNG images!
+I also had to create the output directory `test_images_muokattu` first manually or the script did not work at all! It also seems that mpimg.imsave can only store PNG images!
 
 I was not able to make the videos work at all! I worked for about 30 hours for this project (the suggested goal being 10 hours a week for the course if I remember right). It took lots of time to make the environment work at all.
 
