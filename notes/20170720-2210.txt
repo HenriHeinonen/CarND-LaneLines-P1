@@ -1,0 +1,505 @@
+﻿grayscale(img)
+canny(img, low_threshold, high_threshold)
+gaussian_blur(img, kernel_size)
+region_of_interest(img, vertices)
+draw_lines(img, lines, color=[255, 0, 0], thickness=2)
+hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap)
+----
+plt.imshow(grayscale(image), cmap='gray')
+----
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+----
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+----
+import matplotlib.pyplot as plt
+
+import matplotlib.image as mpimg
+
+import numpy as np
+
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   # Grab the x and y size and make a copy of the image
+
+   ysize = image.shape[0]
+   
+xsize = image.shape[1]
+   
+color_select = np.copy(image)
+
+   line_image = np.copy(image)
+
+   
+# Define color selection criteria
+
+   # MODIFY THESE VARIABLES TO MAKE YOUR COLOR SELECTION
+   
+red_threshold = 200
+   
+green_threshold = 200
+
+   blue_threshold = 200
+   
+
+rgb_threshold = [red_threshold, green_threshold, blue_threshold]
+   
+
+# Define the vertices of a triangular mask.
+
+   # Keep in mind the origin (x=0, y=0) is in the upper left
+   
+# MODIFY THESE VALUES TO ISOLATE THE REGION 
+
+   # WHERE THE LANE LINES ARE IN THE IMAGE
+   
+left_bottom = [0, 539]
+   
+right_bottom = [900, 539]
+   
+apex = [550, 300]
+   
+
+# Perform a linear fit (y=Ax+B) to each of the three sides of the triangle
+   
+# np.polyfit returns the coefficients [A, B] of the fit
+
+   fit_left = np.polyfit((left_bottom[0], apex[0]), (left_bottom[1], apex[1]), 1)
+   
+fit_right = np.polyfit((right_bottom[0], apex[0]), (right_bottom[1], apex[1]), 1)
+   
+fit_bottom = np.polyfit((left_bottom[0], right_bottom[0]), (left_bottom[1], right_bottom[1]), 1)
+
+
+   # Mask pixels below the threshold
+
+   color_thresholds = (image[:,:,0] < rgb_threshold[0]) | \
+                    
+                      (image[:,:,1] < rgb_threshold[1]) | \
+                    
+                      (image[:,:,2] < rgb_threshold[2])
+
+
+   # Find the region inside the lines
+
+   XX, YY = np.meshgrid(np.arange(0, xsize), np.arange(0, ysize))
+
+   region_thresholds = (YY > (XX*fit_left[0] + fit_left[1])) & \
+                    
+                       (YY > (XX*fit_right[0] + fit_right[1])) & \
+                    
+                       (YY < (XX*fit_bottom[0] + fit_bottom[1]))
+                    
+
+   # Mask color and region selection
+
+   color_select[color_thresholds | ~region_thresholds] = [0, 0, 0]
+   
+# Color pixels red where both color and region selections met
+
+   line_image[~color_thresholds & region_thresholds] = [255, 0, 0]
+
+   
+# Display the image and show region and color selections
+
+   plt.imshow(image)
+
+   x = [left_bottom[0], right_bottom[0], apex[0], left_bottom[0]]
+   
+y = [left_bottom[1], right_bottom[1], apex[1], left_bottom[1]]
+
+   plt.plot(x, y, 'b--', lw=4)
+
+   plt.imshow(color_select)
+   
+plt.imshow(line_image)
+
+   laskuri = laskuri + 1
+----
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   # Grab the x and y size and make a copy of the image
+   ysize = image.shape[0]
+   xsize = image.shape[1]
+   color_select = np.copy(image)
+   line_image = np.copy(image)
+   # Define color selection criteria
+   # MODIFY THESE VARIABLES TO MAKE YOUR COLOR SELECTION
+   red_threshold = 200
+   green_threshold = 200
+   blue_threshold = 200
+   rgb_threshold = [red_threshold, green_threshold, blue_threshold]
+   # Define the vertices of a triangular mask.
+   # Keep in mind the origin (x=0, y=0) is in the upper left
+   # MODIFY THESE VALUES TO ISOLATE THE REGION 
+   # WHERE THE LANE LINES ARE IN THE IMAGE
+   left_bottom = [0, 539]
+   right_bottom = [900, 539]
+   apex = [550, 300]
+   # Perform a linear fit (y=Ax+B) to each of the three sides of the triangle
+   # np.polyfit returns the coefficients [A, B] of the fit
+   fit_left = np.polyfit((left_bottom[0], apex[0]), (left_bottom[1], apex[1]), 1)
+   fit_right = np.polyfit((right_bottom[0], apex[0]), (right_bottom[1], apex[1]), 1)
+   fit_bottom = np.polyfit((left_bottom[0], right_bottom[0]), (left_bottom[1], right_bottom[1]), 1)
+   # Mask pixels below the threshold
+   color_thresholds = (image[:,:,0] < rgb_threshold[0]) | \
+                      (image[:,:,1] < rgb_threshold[1]) | \
+                      (image[:,:,2] < rgb_threshold[2])
+   # Find the region inside the lines
+   XX, YY = np.meshgrid(np.arange(0, xsize), np.arange(0, ysize))
+   region_thresholds = (YY > (XX*fit_left[0] + fit_left[1])) & \
+                       (YY > (XX*fit_right[0] + fit_right[1])) & \
+                       (YY < (XX*fit_bottom[0] + fit_bottom[1]))
+   # Mask color and region selection
+   color_select[color_thresholds | ~region_thresholds] = [0, 0, 0]
+   # Color pixels red where both color and region selections met
+   line_image[~color_thresholds & region_thresholds] = [255, 0, 0]
+   # Display the image and show region and color selections
+   plt.imshow(image)
+   x = [left_bottom[0], right_bottom[0], apex[0], left_bottom[0]]
+   y = [left_bottom[1], right_bottom[1], apex[1], left_bottom[1]]
+   #plt.plot(x, y, 'b--', lw=4)
+   plt.imshow(color_select)
+   plt.imshow(line_image)
+   laskuri = laskuri + 1
+----
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   # Grab the x and y size and make a copy of the image
+   ysize = image.shape[0]
+   xsize = image.shape[1]
+   color_select = np.copy(image)
+   color_select2 = np.copy(image)
+   line_image = np.copy(image)
+   # Define color selection criteria
+   # MODIFY THESE VARIABLES TO MAKE YOUR COLOR SELECTION
+   red_threshold = 200
+   green_threshold = 200
+   blue_threshold = 200
+   rgb_threshold = [red_threshold, green_threshold, blue_threshold]
+   rgb_threshold2 = [200, 200, 0] # for the yellow lane lines!
+   # Define the vertices of a triangular mask.
+   # Keep in mind the origin (x=0, y=0) is in the upper left
+   # MODIFY THESE VALUES TO ISOLATE THE REGION 
+   # WHERE THE LANE LINES ARE IN THE IMAGE
+   left_bottom = [0, 539]
+   right_bottom = [900, 539]
+   apex = [550, 300]
+   # Perform a linear fit (y=Ax+B) to each of the three sides of the triangle
+   # np.polyfit returns the coefficients [A, B] of the fit
+   fit_left = np.polyfit((left_bottom[0], apex[0]), (left_bottom[1], apex[1]), 1)
+   fit_right = np.polyfit((right_bottom[0], apex[0]), (right_bottom[1], apex[1]), 1)
+   fit_bottom = np.polyfit((left_bottom[0], right_bottom[0]), (left_bottom[1], right_bottom[1]), 1)
+   # Mask pixels below the threshold
+   color_thresholds = (image[:,:,0] < rgb_threshold[0]) | \
+                      (image[:,:,1] < rgb_threshold[1]) | \
+                      (image[:,:,2] < rgb_threshold[2])
+   color_thresholds2 = (image[:,:,0] < rgb_threshold2[0]) | \
+                      (image[:,:,1] < rgb_threshold2[1]) | \
+                      (image[:,:,2] < rgb_threshold2[2])
+   # Find the region inside the lines
+   XX, YY = np.meshgrid(np.arange(0, xsize), np.arange(0, ysize))
+   region_thresholds = (YY > (XX*fit_left[0] + fit_left[1])) & \
+                       (YY > (XX*fit_right[0] + fit_right[1])) & \
+                       (YY < (XX*fit_bottom[0] + fit_bottom[1]))
+   # Mask color and region selection
+   color_select[color_thresholds | ~region_thresholds] = [0, 0, 0]
+   color_select2[color_thresholds2 | ~region_thresholds] = [0, 0, 0]
+   # Color pixels red where both color and region selections met
+   line_image[~color_thresholds & region_thresholds] = [255, 0, 0]
+   line_image[~color_thresholds2 & region_thresholds] = [255, 0, 0]
+   # Display the image and show region and color selections
+   plt.imshow(image)
+   x = [left_bottom[0], right_bottom[0], apex[0], left_bottom[0]]
+   y = [left_bottom[1], right_bottom[1], apex[1], left_bottom[1]]
+   #plt.plot(x, y, 'b--', lw=4)
+   plt.imshow(color_select)
+   plt.imshow(color_select2)
+   plt.imshow(line_image)
+   laskuri = laskuri + 1
+----
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   image = mpimg.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   # Grab the x and y size and make a copy of the image
+   ysize = image.shape[0]
+   xsize = image.shape[1]
+   color_select = np.copy(image)
+   color_select2 = np.copy(image)
+   line_image = np.copy(image)
+   # Define color selection criteria
+   # MODIFY THESE VARIABLES TO MAKE YOUR COLOR SELECTION
+   red_threshold = 200
+   green_threshold = 200
+   blue_threshold = 200
+   rgb_threshold = [red_threshold, green_threshold, blue_threshold]
+   rgb_threshold2 = [200, 200, 0] # for the yellow lane lines!
+   # Define the vertices of a triangular mask.
+   # Keep in mind the origin (x=0, y=0) is in the upper left
+   # MODIFY THESE VALUES TO ISOLATE THE REGION 
+   # WHERE THE LANE LINES ARE IN THE IMAGE
+   left_bottom = [130, 539]
+   right_bottom = [900, 539]
+   apex = [480, 310]
+   # Perform a linear fit (y=Ax+B) to each of the three sides of the triangle
+   # np.polyfit returns the coefficients [A, B] of the fit
+   fit_left = np.polyfit((left_bottom[0], apex[0]), (left_bottom[1], apex[1]), 1)
+   fit_right = np.polyfit((right_bottom[0], apex[0]), (right_bottom[1], apex[1]), 1)
+   fit_bottom = np.polyfit((left_bottom[0], right_bottom[0]), (left_bottom[1], right_bottom[1]), 1)
+   # Mask pixels below the threshold
+   color_thresholds = (image[:,:,0] < rgb_threshold[0]) | \
+                      (image[:,:,1] < rgb_threshold[1]) | \
+                      (image[:,:,2] < rgb_threshold[2])
+   color_thresholds2 = (image[:,:,0] < rgb_threshold2[0]) | \
+                      (image[:,:,1] < rgb_threshold2[1]) | \
+                      (image[:,:,2] < rgb_threshold2[2])
+   # Find the region inside the lines
+   XX, YY = np.meshgrid(np.arange(0, xsize), np.arange(0, ysize))
+   region_thresholds = (YY > (XX*fit_left[0] + fit_left[1])) & \
+                       (YY > (XX*fit_right[0] + fit_right[1])) & \
+                       (YY < (XX*fit_bottom[0] + fit_bottom[1]))
+   # Mask color and region selection
+   color_select[color_thresholds | ~region_thresholds] = [0, 0, 0]
+   color_select2[color_thresholds2 | ~region_thresholds] = [0, 0, 0]
+   # Color pixels red where both color and region selections met
+   line_image[~color_thresholds & region_thresholds] = [255, 0, 0]
+   line_image[~color_thresholds2 & region_thresholds] = [255, 0, 0]
+   # Display the image and show region and color selections
+   plt.imshow(image)
+   x = [left_bottom[0], right_bottom[0], apex[0], left_bottom[0]]
+   y = [left_bottom[1], right_bottom[1], apex[1], left_bottom[1]]
+   #plt.plot(x, y, 'b--', lw=4)
+   plt.imshow(color_select)
+   plt.imshow(color_select2)
+   plt.imshow(line_image)
+   laskuri = laskuri + 1
+----
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+import imageio
+
+kuvat = os.listdir("test_images/")
+laskuri = 1
+for kuva in kuvat:
+   #image = mpimg.imread('test_images/' + kuva)
+   image = imageio.imread('test_images/' + kuva)
+
+   plt.figure(laskuri)
+   plt.imshow(image)
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   plt.imshow(grayscale(image), cmap='gray')
+   laskuri = laskuri + 1
+
+   plt.figure(laskuri)
+   # Grab the x and y size and make a copy of the image
+   ysize = image.shape[0]
+   xsize = image.shape[1]
+   color_select = np.copy(image)
+   color_select2 = np.copy(image)
+   line_image = np.copy(image)
+   # Define color selection criteria
+   # MODIFY THESE VARIABLES TO MAKE YOUR COLOR SELECTION
+   red_threshold = 200
+   green_threshold = 200
+   blue_threshold = 200
+   rgb_threshold = [red_threshold, green_threshold, blue_threshold]
+   rgb_threshold2 = [200, 200, 0] # for the yellow lane lines!
+   # Define the vertices of a triangular mask.
+   # Keep in mind the origin (x=0, y=0) is in the upper left
+   # MODIFY THESE VALUES TO ISOLATE THE REGION 
+   # WHERE THE LANE LINES ARE IN THE IMAGE
+   left_bottom = [130, 539]
+   right_bottom = [900, 539]
+   apex = [480, 310]
+   # Perform a linear fit (y=Ax+B) to each of the three sides of the triangle
+   # np.polyfit returns the coefficients [A, B] of the fit
+   fit_left = np.polyfit((left_bottom[0], apex[0]), (left_bottom[1], apex[1]), 1)
+   fit_right = np.polyfit((right_bottom[0], apex[0]), (right_bottom[1], apex[1]), 1)
+   fit_bottom = np.polyfit((left_bottom[0], right_bottom[0]), (left_bottom[1], right_bottom[1]), 1)
+   # Mask pixels below the threshold
+   color_thresholds = (image[:,:,0] < rgb_threshold[0]) | \
+                      (image[:,:,1] < rgb_threshold[1]) | \
+                      (image[:,:,2] < rgb_threshold[2])
+   color_thresholds2 = (image[:,:,0] < rgb_threshold2[0]) | \
+                      (image[:,:,1] < rgb_threshold2[1]) | \
+                      (image[:,:,2] < rgb_threshold2[2])
+   # Find the region inside the lines
+   XX, YY = np.meshgrid(np.arange(0, xsize), np.arange(0, ysize))
+   region_thresholds = (YY > (XX*fit_left[0] + fit_left[1])) & \
+                       (YY > (XX*fit_right[0] + fit_right[1])) & \
+                       (YY < (XX*fit_bottom[0] + fit_bottom[1]))
+   # Mask color and region selection
+   color_select[color_thresholds | ~region_thresholds] = [0, 0, 0]
+   color_select2[color_thresholds2 | ~region_thresholds] = [0, 0, 0]
+   # Color pixels red where both color and region selections met
+   line_image[~color_thresholds & region_thresholds] = [255, 0, 0]
+   line_image[~color_thresholds2 & region_thresholds] = [255, 0, 0]
+   # Display the image and show region and color selections
+   plt.imshow(image)
+   x = [left_bottom[0], right_bottom[0], apex[0], left_bottom[0]]
+   y = [left_bottom[1], right_bottom[1], apex[1], left_bottom[1]]
+   #plt.plot(x, y, 'b--', lw=4)
+   plt.imshow(color_select)
+   plt.imshow(color_select2)
+   plt.imshow(line_image)
+   #imageio.imwrite('test_images/' + kuva + '_muokattu.jpg', image[:, :, :])
+   #plt.savefig('test_images/' + kuva + '_muokattu.jpg')
+   savefig('test_images/' + kuva + '_muokattu.jpg')
+   laskuri = laskuri + 1
+----
+plt.imshow(canny(image, 50, 150))
+----
+plt.imshow( hough_lines(canny(image, 50, 150), 1, np.pi/180, 1, 5, 1) )
+----
+cv2.line(line_img, (200,530), (430,320), color, thickness=10)
+plt.imshow(line_img)
+----
+muisti = []
+for line in lines:
+    print(line)
+    for x1,y1,x2,y2 in line:
+        print((y2-y1)/(x2-x1))
+        muisti.append((y2-y1)/(x2-x1))
+print(muisti)
+min(muisti)
+max(muisti)
+a = np.array(muisti)
+a = a[a < 100]
+a = a[a > -100]
+min(a) # -1.25
+max(a) # 0.66666666666666663
+np.mean(a[a<0]) # -0.73817793317793323
+np.mean(a[a>0]) # 0.49266458955865255
+----
+y=kx+b
+(y2-y1)/(x2-x1)=k
+y2-y1=k(x2-x1)=k*x2-k*x1
+y2-k*x2=-k*x1+y1
+
+x1=200
+y1=520
+x2=0
+y2=k(x2-x1)+y1=0.66666666666666663*(0-200)+520=386.6666666666667
+
+
+
+
+k1 = 0.49266458955865255
+k2 = -0.73817793317793323
+
+----
+# x-koordinaatti, joka on suunnilleen yhtä kaukana oikeasta ja vasemmasta kaistaviivasta
+line_img.shape[1]/2 # 480.0
+
+# y-koordinaatti, jossa on horisontti
+y1array=[]
+y2array=[]
+for line in lines:
+    for x1,y1,x2,y2 in line:
+        y1array.append(y1)
+        y2array.append(y2)
+print(y1array)
+print(y2array)
+print( min( min(y1array), min(y2array) ) ) # 309
+
+# y-koordinaatti, jossa kaista kohtaa kuvan reunan
+line_img.shape[0] # 540
+# vastaava x-koordinaatti
+x1array=[]
+x2array=[]
+for line in lines:
+    for x1,y1,x2,y2 in line:
+        x1array.append(x1)
+        x2array.append(x2)
+print(x1array)
+print(x2array)
+x1array = np.array(x1array)
+x2array = np.array(x2array)
+max(max(x1array[x1array < 480]), max(x2array[x2array < 480])) # 456
+# toinen vastaava x-koordinaatti
+max(max(x1array[x1array > 480]), max(x2array[x2array > 480])) # 874
+----
+mean(x1array[x1array<half]) # 364
+mean(x2array[x2array<half]) # 372
+mean( [ mean(x1array[x1array<half]), mean(x2array[x2array<half])] ) # 368
+mean(y1array) # 404
+mean(y2array) # 408
+mean([mean(y1array), mean(y2array)]) # 406

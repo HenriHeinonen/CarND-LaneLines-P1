@@ -1,0 +1,57 @@
+﻿1. lue kuva: image = mpimg.imread('test_images\solidWhiteCurve.jpg')
+   näytä kuva: plt.imshow(image)
+2. muuta kuva harmaansävyiseksi: gray = grayscale(image)
+   näytä kuva: plt.imshow(gray)
+   näytä kuva oikealla tavalla harmaansävyisenä: plt.imshow(gray, cmap='gray')
+3. määrittele kernel-koko: kernel_size = 5
+   tee Gaussin pehmennys: blur_gray = gaussian_blur(gray, kernel_size)
+   näytä kuva: plt.imshow(blur_gray, cmap='gray')
+4. määrittele low_threshold-parametri Cannylle: low_threshold = 50
+   määrittele high_threshold-parametri Cannylle: high_threshold = 150
+   tee Canny: edges = canny(blur_gray, low_threshold, high_threshold)
+   näytä kuva: plt.imshow(edges)
+5. määrittele maski: vertices = np.array([[(430, 300),(90,540),(890, 540),(500,300)]], dtype=np.int32)
+   tee maski: masked_image = region_of_interest(edges, vertices)
+   näytä kuva: plt.imshow(masked_image)
+6. määrittele rho-parametri Houhgille: rho = 1
+   määrittele theta-parametri Houghille: theta = np.pi/180
+   määrittele threshold-parametri Houghille: threshold = 1
+   määrittele min_line_length-parametri Houghille: min_line_length = 5
+   määrittele max_line_gap-parametri Houghille: max_line_gap = 1
+   tee Hough: line_img = hough_lines(masked_image, rho, theta, threshold, min_line_length, max_line_gap)
+   näytä kuva: plt.imshow(line_img)
+7. määrittele color-parametrit piirtofunktiolle: color=[255, 0, 0]
+   luo musta kuva: line_image = np.copy(image)*0
+----
+   määrittele lines: lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, np.array([]), minLineLength=min_line_length, maxLineGap=max_line_gap)
+   for line in lines:
+      for x1,y1,x2,y2 in line:
+          cv2.line(line_image,(x1,y1),(x2,y2),(255,0,0),10)
+   color_edges = np.dstack((edges, edges, edges))
+   lines_edges = cv2.addWeighted(color_edges, 0.8, line_image, 1, 0)
+   plt.imshow(lines_edges)
+   määrittele thickness-parametri: thickness=2
+   piirrä viivat: draw_lines(line_img, lines, color, thickness)
+   plt.imshow(line_img)
+
+cv2.line(line_image,(281,537),(456,309),(255,0,0),10)
+cv2.line(line_image,(481,309),(874,537),(255,0,0),10)
+----
+half = line_img.shape[1]/2 # 480.0
+x1array=[]
+x2array=[]
+y1array=[]
+y2array=[]
+lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, np.array([]), minLineLength=min_line_length, maxLineGap=max_line_gap)
+for line in lines:
+    for x1,y1,x2,y2 in line:
+        x1array.append(x1)
+        x2array.append(x2)
+        y1array.append(y1)
+        y2array.append(y2)
+x1array = np.array(x1array)
+x2array = np.array(x2array)
+x_a = min( min(x1array[x1array<half]), min(x2array[x2array<half]) )
+y_a = max( max(y1array), max(y2array) )
+x_b = max( max(x1array[x1array<half]), max(x2array[x2array<half]) )
+y_b = min( min(y1array), min(y2array) )

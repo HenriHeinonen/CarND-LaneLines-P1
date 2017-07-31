@@ -1,0 +1,4 @@
+﻿try:
+    print(np.where(x1array == 463)[0][0])
+except IndexError:
+    print(np.where(x2array == 463)[0][0])
